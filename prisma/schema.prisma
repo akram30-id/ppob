@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String?   @db.VarChar(100)
+  password   String?   @db.VarChar(100)
+  token      String?   @db.VarChar(100)
+  role       String?   @db.VarChar(16)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@index([email])
+  @@map("users")
+}
+
+model Profile {
+  id         Int       @id @default(autoincrement())
+  user_id    Int?
+  first_name String?   @db.VarChar(100)
+  last_name  String?   @db.VarChar(100)
+  is_active  Int?      @default(1) @db.SmallInt
+  image_path String?   @db.VarChar(250)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @default(now())
+
+  @@index([user_id])
+  @@map("profiles")
+}
+
+model Banner {
+  id          Int       @id @default(autoincrement())
+  banner_code String?   @db.VarChar(50)
+  banner_name String?   @db.VarChar(100)
+  image_path  String?   @db.VarChar(250)
+  description String?   @db.VarChar(250)
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @default(now())
+
+  @@index([banner_code])
+  @@map("banners")
+}
+
+model Service {
+  id           Int       @id @default(autoincrement())
+  service_code String?   @db.VarChar(50)
+  service_name String?   @db.VarChar(100)
+  icon_path    String?   @db.VarChar(250)
+  service_fee  BigInt?
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @default(now())
+
+  @@index([service_code])
+  @@map("services")
+}
+
+model UserBalance {
+  id               Int       @id @default(autoincrement())
+  user_id          Int?
+  amount           BigInt?
+  is_still_process Int?      @default(0)
+  created_at       DateTime? @default(now())
+  updated_at       DateTime? @default(now())
+
+  @@index([user_id])
+  @@map("user_balances")
+}
+
+model TopupHistory {
+  id                 Int       @id @default(autoincrement())
+  user_id            Int?
+  topup_history_code String?   @db.VarChar(50)
+  amount             BigInt?
+  last_balance       BigInt?
+  created_at         DateTime? @default(now())
+  updated_at         DateTime? @default(now())
+
+  @@index([user_id])
+  @@index([topup_history_code])
+  @@map("topup_histories")
+}
+
+model TransactionType {
+  id                    Int       @id @default(autoincrement())
+  transaction_type_code String?   @db.VarChar(50)
+  description           String?   @db.VarChar(200)
+  created_at            DateTime? @default(now())
+  updated_at            DateTime? @default(now())
+
+  @@index([transaction_type_code])
+  @@map("transaction_types")
+}
+
+model TransactionHistory {
+  id                    Int       @id @default(autoincrement())
+  user_id               Int?
+  transaction_code      String?   @db.VarChar(150)
+  service_code          String?   @db.VarChar(50)
+  transaction_type_code String?   @db.VarChar(50)
+  amount                BigInt?
+  status                String?   @db.VarChar(50)
+  created_at            DateTime? @default(now())
+  updated_at            DateTime? @default(now())
+
+  @@index([user_id])
+  @@index([transaction_code])
+  @@index([service_code])
+  @@index([transaction_type_code])
+  @@map("transaction_histories")
+}
